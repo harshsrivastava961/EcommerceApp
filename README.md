@@ -1,97 +1,144 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+## Overview
 
-# Getting Started
+React Native e-commerce application featuring FakeStore product browsing, Firebase Authentication, Stripe (test mode) checkout, and Firestore-backed order history. The project is optimised for portfolio/demo usage and leverages only free resources.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## 🚀 Quick Start
 
-## Step 1: Start Metro
+**New to this project?** Start with the **[SETUP_GUIDE.md](./SETUP_GUIDE.md)** for step-by-step instructions on:
+- Setting up Firebase (Authentication & Firestore)
+- Configuring Stripe (test mode)
+- Running the Stripe backend server
+- Testing the complete app flow
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Tech Stack
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- React Native CLI (TypeScript)
+- Redux Toolkit + Redux Persist
+- React Navigation (Stack + Bottom Tabs)
+- React Native Paper UI kit
+- Firebase Auth & Firestore
+- Stripe Mobile SDK (`@stripe/stripe-react-native`)
+- Async Storage persistence
+- FakeStore API for catalog data
 
+## Project Structure
+
+```
+src/
+ ├─ components/          # Reusable UI / widgets
+ ├─ config/              # Firebase & Stripe configuration
+ ├─ navigation/          # Stack/tab navigators
+ ├─ redux/               # Store, slices, selectors, hooks
+ ├─ screens/             # Feature screens grouped by domain
+ ├─ services/            # API/Firebase/Stripe helpers
+ └─ utils/               # Constants, formatters, shared types
+```
+
+## Features
+
+- Email/password signup, login, logout, password reset (Firebase Auth)
+- Product listing with category filters, search, and sorting (FakeStore API)
+- Product detail view with add-to-cart
+- Cart management with quantity adjustments and persistence (AsyncStorage)
+- Stripe test-mode checkout flow (requires lightweight backend for PaymentIntent)
+- Firestore order persistence and profile order history list
+- Profile management with logout and pull-to-refresh order history
+
+## Environment Setup
+
+1. Follow the official [React Native environment setup](https://reactnative.dev/docs/environment-setup) for your target platform(s).
+2. Install JavaScript dependencies:
+   ```sh
+   npm install
+   ```
+3. (iOS) Install CocoaPods after configuring Xcode/iOS tooling:
+   ```sh
+   cd ios && pod install && cd ..
+   ```
+
+### Required Environment Variables
+
+Create a `.env` (or configure your preferred env management) and ensure the following variables are available at build time (e.g. via `react-native-config`, `.xcconfig`, Gradle properties, or Metro transforms):
+
+```
+FIREBASE_API_KEY=
+FIREBASE_AUTH_DOMAIN=
+FIREBASE_PROJECT_ID=
+FIREBASE_STORAGE_BUCKET=
+FIREBASE_MESSAGING_SENDER_ID=
+FIREBASE_APP_ID=
+
+STRIPE_PUBLISHABLE_KEY=pk_test_xxx
+STRIPE_BACKEND_URL=http://localhost:4242
+```
+
+Update `src/config/firebaseConfig.ts` and `src/config/stripeConfig.ts` if you prefer hard-coded values for demo scenarios.
+
+### Stripe Payment Backend
+
+Stripe’s mobile SDK requires a server to create PaymentIntents and return client secrets. Use one of the free sample backends:
+
+- [Stripe Payment Sheet sample](https://github.com/stripe-samples/payment-sheet) (Node.js)
+- Minimal Express server example:
+  ```sh
+  git clone https://github.com/stripe-samples/payment-sheet
+  cd payment-sheet/server/node
+  npm install
+  STRIPE_WEBHOOK_SECRET= \
+  STRIPE_SECRET_KEY=sk_test_xxx \
+  PORT=4242 \
+  npm start
+  ```
+
+Set `STRIPE_BACKEND_URL` to the running server URL.
+
+## Running the App
+
+Start Metro:
 ```sh
-# Using npm
 npm start
-
-# OR using Yarn
-yarn start
 ```
 
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
+Run on Android:
 ```sh
-# Using npm
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
+Run on iOS:
 ```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
 npm run ios
-
-# OR using Yarn
-yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+Ensure Android emulators / iOS simulators are running (or devices connected) before invoking the platform commands.
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+## Testing
 
-## Step 3: Modify your app
+Unit/UI tests can be added with Jest + React Native Testing Library (coming soon). To run the baseline test suite:
+```sh
+npm test
+```
 
-Now that you have successfully run the app, let's make changes!
+## Key Files
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+- `App.tsx` — Root providers (Redux, Persist, Stripe) and app entry navigation.
+- `src/navigation/AppNavigator.tsx` — Auth stack + tabbed app flow.
+- `src/redux/slices/*` — Feature state management (auth, products, cart, orders).
+- `src/screens/*` — Screen implementations across auth, browsing, cart, checkout, profile.
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+## Roadmap / Enhancements
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+- Wishlist & favourites
+- Coupon/discount handling
+- Push notifications
+- AI recommendations
+- Multi-currency support
 
-## Congratulations! :tada:
+## Troubleshooting
 
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- Double-check Firebase configuration & Firestore security rules for free-tier access.
+- Use Stripe test cards (e.g. `4242 4242 4242 4242`) while in test mode.
+- If Metro bundler fails to resolve modules, clear caches:
+  ```sh
+  npx react-native-clean-project
+  npm start -- --reset-cache
+  ```
