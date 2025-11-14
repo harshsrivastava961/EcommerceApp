@@ -30,17 +30,22 @@ export const placeOrder = createAsyncThunk(
   'orders/placeOrder',
   async (orderData: PlaceOrderArgs, { rejectWithValue }) => {
     try {
+      console.log('Creating order in Firestore:', orderData);
       const docRef = await addDoc(collection(firestore, 'orders'), {
         ...orderData,
         createdAt: serverTimestamp(),
       });
+      console.log('Order created in Firestore with ID:', docRef.id);
       return {
         id: docRef.id,
         ...orderData,
         createdAt: new Date().toISOString(),
       } satisfies Order;
-    } catch (error) {
-      return rejectWithValue((error as Error).message);
+    } catch (error: any) {
+      console.error('Error creating order in Firestore:', error);
+      const errorMessage =
+        error?.message || error?.code || 'Failed to create order';
+      return rejectWithValue(errorMessage);
     }
   },
 );

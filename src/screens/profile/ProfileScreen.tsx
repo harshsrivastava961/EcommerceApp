@@ -11,7 +11,7 @@ import { formatCurrency } from '../../utils/format';
 const ProfileScreen = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector(state => state.auth.user);
-  const { orders, loading } = useAppSelector(state => state.orders);
+  const { orders, loading, error } = useAppSelector(state => state.orders);
 
   const loadOrders = useCallback(() => {
     if (user) {
@@ -45,6 +45,12 @@ const ProfileScreen = () => {
       <Text variant="titleMedium" style={styles.sectionTitle}>
         Order History
       </Text>
+
+      {error && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Error loading orders: {error}</Text>
+        </View>
+      )}
 
       <FlatList
         data={orders}
@@ -101,6 +107,15 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 160,
+  },
+  errorContainer: {
+    padding: 12,
+    backgroundColor: '#ffebee',
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  errorText: {
+    color: '#c62828',
   },
 });
 
