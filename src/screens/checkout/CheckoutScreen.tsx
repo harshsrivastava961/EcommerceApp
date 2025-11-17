@@ -4,7 +4,8 @@ import { Button, Text } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useStripe } from '@stripe/stripe-react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 import CartSummary from '../../components/CartSummary';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
@@ -29,8 +30,6 @@ const CheckoutScreen = () => {
   const user = useAppSelector(state => state.auth.user);
 
   const [loading, setLoading] = useState(false);
-
-  const insets = useSafeAreaInsets();
 
   const handlePayment = async () => {
     if (!user) {
@@ -112,25 +111,16 @@ const CheckoutScreen = () => {
       
       console.log('Presenting payment sheet...');
       
-      // Add a delay to ensure UI is ready
-      await new Promise<void>(resolve => setTimeout(() => resolve(), 500));
-      
-      // Wrap in a promise with timeout to prevent hanging
-      const presentPaymentSheetWithTimeout = () => {
-        return Promise.race([
-          stripe.presentPaymentSheet(),
-          new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error('Payment sheet timeout')), 30000),
-          ),
-        ]);
-      };
-      
       let paymentSuccessful = false;
       
       try {
-        const presentResult = await presentPaymentSheetWithTimeout();
+        console.log('About to present payment sheet...');
+        const presentResult = await stripe.presentPaymentSheet();
         
-        if (presentResult.error) {
+        console.log('presentPaymentSheet result:', JSON.stringify(presentResult));
+        
+        // Check if there's an error property
+        if (presentResult && presentResult.error) {
           console.error('Payment sheet present error:', presentResult.error);
           // Handle specific error codes
           if (presentResult.error.code === 'Canceled') {
@@ -140,11 +130,12 @@ const CheckoutScreen = () => {
           throw new Error(presentResult.error.message || 'Payment failed');
         }
         
-        // Payment was successful if no error
+        // If no error, payment was successful
+        // Note: Stripe returns undefined for success, or an object with error property for failure
         paymentSuccessful = true;
-        console.log('Payment completed successfully!');
+        console.log('Payment completed successfully! Result:', presentResult);
       } catch (presentError: any) {
-        console.error('Error presenting payment sheet:', presentError);
+        console.error('Error presenting payment sheet (catch block):', presentError);
         
         // Handle user cancellation
         if (
@@ -156,14 +147,9 @@ const CheckoutScreen = () => {
           return; // Exit silently if user canceled
         }
         
-        // Handle timeout
-        if (presentError?.message?.includes('timeout')) {
-          throw new Error('Payment sheet took too long to open. Please try again.');
-        }
-        
         // Re-throw other errors
         throw new Error(
-          presentError?.message || 'Failed to open payment sheet. Please try again.',
+          presentError?.message || 'Failed to process payment. Please try again.',
         );
       }
 
@@ -175,7 +161,24 @@ const CheckoutScreen = () => {
 
       console.log('Payment successful, creating order...');
       
+      // Show success toast immediately
+      Toast.show({
+        type: 'success',
+        text1: 'Payment Successful!',
+        text2: 'Creating your order...',
+        position: 'top',
+        visibilityTime: 3000,
+      });
+      
       try {
+        console.log('Dispatching placeOrder with:', {
+          userId: user.uid,
+          itemsCount: items.length,
+          total,
+          currency,
+          paymentIntentId,
+        });
+        
         const order = await dispatch(
           placeOrder({
             userId: user.uid,
@@ -194,11 +197,29 @@ const CheckoutScreen = () => {
         dispatch(clearCart());
         console.log('Cart cleared');
         
-        // Navigate to success screen
+        // Show order success toast
+        Toast.show({
+          type: 'success',
+          text1: 'Order Created!',
+          text2: `Order #${order.id.substring(0, 8)}`,
+          position: 'top',
+          visibilityTime: 2000,
+        });
+        
+        // Navigate to success screen with a small delay to show toast
         console.log('Navigating to OrderSuccess screen...');
-        navigation.replace('OrderSuccess', { orderId: order.id });
+        setTimeout(() => {
+          navigation.replace('OrderSuccess', { orderId: order.id });
+        }, 500);
       } catch (orderError: any) {
         console.error('Error creating order:', orderError);
+        Toast.show({
+          type: 'error',
+          text1: 'Order Creation Failed',
+          text2: orderError?.message || 'Unknown error',
+          position: 'top',
+          visibilityTime: 4000,
+        });
         throw new Error(
           `Order creation failed: ${orderError?.message || 'Unknown error'}`,
         );
@@ -214,7 +235,7 @@ const CheckoutScreen = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea, { paddingTop: insets.top || 12 }]}>
+    <SafeAreaView style={[styles.safeArea]}>
       <ScrollView contentContainerStyle={styles.container}>
       <Text variant="headlineMedium" style={styles.title}>
         Order Summary
