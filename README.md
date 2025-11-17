@@ -2,6 +2,18 @@
 
 React Native e-commerce application featuring FakeStore product browsing, Firebase Authentication, Stripe (test mode) checkout, and Firestore-backed order history. The project is optimised for portfolio/demo usage and leverages only free resources.
 
+<img width="1080" height="2400" alt="Screenshot_1763371947" src="https://github.com/user-attachments/assets/8d764321-a0a7-4143-a574-932c7d47368e" />
+<img width="1080" height="2400" alt="Screenshot_1763371455" src="https://github.com/user-attachments/assets/16d3f155-3391-4ba2-a6ee-5173d4302ac1" />
+<img width="1080" height="2400" alt="Screenshot_1763363072" src="https://github.com/user-attachments/assets/d9fbd61f-d668-4975-9680-2772fd4e404a" />
+<img width="1080" height="2400" alt="Screenshot_1763363067" src="https://github.com/user-attachments/assets/eb07371f-4e15-44c2-aa85-a1e192722cd8" />
+<img width="1080" height="2400" alt="Screenshot_1763363058" src="https://github.com/user-attachments/assets/e5bbbb68-796c-49f3-91dc-3856ccdb30cf" />
+<img width="1080" height="2400" alt="Screenshot_1763361832" src="https://github.com/user-attachments/assets/4e9af7be-d8dd-4527-a713-1838b4191a98" />
+<img width="1080" height="2400" alt="Screenshot_1763361653" src="https://github.com/user-attachments/assets/ba3f41d5-8a9d-4d97-b13e-3887b942b2c5" />
+<img width="1080" height="2400" alt="Screenshot_1763356610" src="https://github.com/user-attachments/assets/732fd3f0-6548-46c3-a97e-f220fc965c61" />
+<img width="1080" height="2400" alt="Screenshot_1763356606" src="https://github.com/user-attachments/assets/f2c895e7-0c10-4db3-93b4-ef432f09430c" />
+
+
+
 ## 🚀 Quick Start
 
 **New to this project?** Start with the **[SETUP_GUIDE.md](./SETUP_GUIDE.md)** for step-by-step instructions on:
