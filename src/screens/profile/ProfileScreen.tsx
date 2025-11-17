@@ -2,6 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { Button, Card, Text } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { signOutUser } from '../../redux/slices/authSlice';
@@ -12,6 +13,7 @@ const ProfileScreen = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector(state => state.auth.user);
   const { orders, loading, error } = useAppSelector(state => state.orders);
+  // const insets = useSafeAreaInsets();
 
   const loadOrders = useCallback(() => {
     if (user) {
@@ -30,7 +32,10 @@ const ProfileScreen = () => {
   }, [loadOrders]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView
+      style={[styles.container]}
+      edges={['top', 'left', 'right']}
+    >
       <Card style={styles.profileCard}>
         <Card.Content>
           <Text variant="titleLarge">Profile</Text>
@@ -75,7 +80,7 @@ const ProfileScreen = () => {
         }
         contentContainerStyle={styles.listContent}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

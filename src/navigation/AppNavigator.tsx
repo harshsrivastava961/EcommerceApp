@@ -60,6 +60,18 @@ const HomeStackNavigator = () => (
   </HomeStack.Navigator>
 );
 
+const getTabBarIcon = (
+  route: RouteProp<TabParamList, keyof TabParamList>
+) => ({ color, size }: { color: string; size: number }) => {
+  let iconName = 'home';
+  if (route.name === 'Cart') {
+    iconName = 'cart';
+  } else if (route.name === 'Profile') {
+    iconName = 'account';
+  }
+  return <Icon name={iconName} size={size} color={color} />;
+};
+
 const TabNavigator = () => (
   <Tab.Navigator
     screenOptions={({
@@ -69,15 +81,7 @@ const TabNavigator = () => (
     }) => ({
       headerShown: false,
       tabBarActiveTintColor: COLORS.primary,
-      tabBarIcon: ({ color, size }: { color: string; size: number }) => {
-        let iconName = 'home';
-        if (route.name === 'Cart') {
-          iconName = 'cart';
-        } else if (route.name === 'Profile') {
-          iconName = 'account';
-        }
-        return <Icon name={iconName} size={size} color={color} />;
-      },
+      tabBarIcon: getTabBarIcon(route),
     })}
   >
     <Tab.Screen name="Shop" component={HomeStackNavigator} />

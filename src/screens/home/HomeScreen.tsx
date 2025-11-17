@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
-import { Searchbar, Text } from 'react-native-paper';
+import { Searchbar, Text, Chip, IconButton } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import CategoryChips from '../../components/CategoryChips';
 import ProductCard from '../../components/ProductCard';
@@ -15,7 +16,7 @@ import {
   setSortOption,
 } from '../../redux/slices/productSlice';
 import { addToCart } from '../../redux/slices/cartSlice';
-import { SORT_OPTIONS } from '../../utils/constants';
+import { SORT_OPTIONS, COLORS } from '../../utils/constants';
 import type { Product, SortOption } from '../../utils/types';
 import type { HomeStackParamList } from '../../navigation/AppNavigator';
 
@@ -46,13 +47,25 @@ const HomeScreen = () => {
     dispatch(addToCart(product));
   };
 
+  // const insets = useSafeAreaInsets();
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView
+      style={[styles.safeArea]}
+      edges={['top', 'left', 'right']}
+    >
+      <View style={styles.header}>
+        <Text variant="headlineMedium" style={styles.headerTitle}>
+          Shop
+        </Text>
+      </View>
       <Searchbar
-        placeholder="Search products"
+        placeholder="Search products..."
         value={searchQuery}
         onChangeText={text => dispatch(setSearchQuery(text))}
         style={styles.searchBar}
+        icon="magnify"
+        clearIcon="close-circle"
       />
       <CategoryChips
         categories={categories}
@@ -60,19 +73,17 @@ const HomeScreen = () => {
         onSelect={category => dispatch(setSelectedCategory(category))}
       />
       <View style={styles.sortContainer}>
+        <Text style={styles.sortLabel}>Sort by:</Text>
         {SORT_OPTIONS.map(option => (
-          <Text
+          <Chip
             key={option.value}
-            style={[
-              styles.sortOption,
-              sortOption === option.value && styles.sortOptionSelected,
-            ]}
-            onPress={() =>
-              dispatch(setSortOption(option.value as SortOption))
-            }
+            selected={sortOption === option.value}
+            onPress={() => dispatch(setSortOption(option.value as SortOption))}
+            style={styles.sortChip}
+            mode={sortOption === option.value ? 'flat' : 'outlined'}
           >
             {option.label}
-          </Text>
+          </Chip>
         ))}
       </View>
       {loading ? (
@@ -101,31 +112,48 @@ const HomeScreen = () => {
           }
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
+    backgroundColor: '#F8F9FA',
+  },
+  header: {
     paddingHorizontal: 16,
     paddingTop: 16,
+    paddingBottom: 8,
+    backgroundColor: '#FFFFFF',
+  },
+  headerTitle: {
+    fontWeight: '700',
+    color: COLORS.text,
   },
   searchBar: {
-    marginBottom: 8,
+    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 12,
+    elevation: 2,
   },
   sortContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
     marginBottom: 12,
     flexWrap: 'wrap',
+    gap: 8,
   },
-  sortOption: {
-    marginRight: 12,
-    marginTop: 4,
+  sortLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.text,
+    marginRight: 4,
   },
-  sortOptionSelected: {
-    fontWeight: 'bold',
+  sortChip: {
+    marginRight: 8,
+    marginBottom: 4,
   },
   loader: {
     flex: 1,
@@ -133,11 +161,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   listContent: {
+    paddingHorizontal: 8,
     paddingBottom: 120,
   },
   emptyState: {
     alignItems: 'center',
     marginTop: 64,
+    padding: 32,
   },
 });
 

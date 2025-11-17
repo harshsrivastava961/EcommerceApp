@@ -4,6 +4,7 @@ import { Button, Text } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useStripe } from '@stripe/stripe-react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import CartSummary from '../../components/CartSummary';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
@@ -28,6 +29,8 @@ const CheckoutScreen = () => {
   const user = useAppSelector(state => state.auth.user);
 
   const [loading, setLoading] = useState(false);
+
+  const insets = useSafeAreaInsets();
 
   const handlePayment = async () => {
     if (!user) {
@@ -211,7 +214,8 @@ const CheckoutScreen = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <SafeAreaView style={[styles.safeArea, { paddingTop: insets.top || 12 }]}>
+      <ScrollView contentContainerStyle={styles.container}>
       <Text variant="headlineMedium" style={styles.title}>
         Order Summary
       </Text>
@@ -237,11 +241,16 @@ const CheckoutScreen = () => {
       <Button mode="text" onPress={() => navigation.goBack()}>
         Back to Cart
       </Button>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+  },
   container: {
     flexGrow: 1,
     padding: 16,

@@ -5,6 +5,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StripeProvider } from '@stripe/stripe-react-native';
 import { PaperProvider } from 'react-native-paper';
+import Toast from 'react-native-toast-message';
 import { onAuthStateChanged } from 'firebase/auth';
 
 import AppNavigator from './src/navigation/AppNavigator';
@@ -43,6 +44,7 @@ function App(): React.JSX.Element {
             <SafeAreaProvider>
               <StatusBar barStyle="dark-content" />
               <AppNavigator />
+              <Toast />
             </SafeAreaProvider>
           </PaperProvider>
         </StripeProvider>
